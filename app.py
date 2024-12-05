@@ -1,26 +1,21 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from fastapi.responses import FileResponse
 import random
+import os
 
 app = FastAPI()
-
-class Question(BaseModel):
-    question: str
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*"]
 )
 
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
-
-@app.post("/api/ask")
-async def ask_question(question: Question):
+@app.get("/api/ask")
+async def ask_question():
     responses = [
         "It is certain", "It is decidedly so", "Without a doubt",
         "Yes definitely", "You may rely on it", "As I see it, yes",
@@ -32,3 +27,9 @@ async def ask_question(question: Question):
         "Outlook not so good", "Very doubtful"
     ]
     return {"answer": random.choice(responses)}
+
+@app.get("/")
+async def read_root():
+    return FileResponse('static/index.html')
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
