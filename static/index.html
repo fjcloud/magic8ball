@@ -4,35 +4,56 @@
     <title>Magic 8 Ball</title>
     <style>
         body {
-            background: #1a1a1a;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
             color: white;
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
         }
+
         .container {
             text-align: center;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            max-width: 600px;
+            width: 90%;
         }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
         .magic-ball {
             width: 300px;
             height: 300px;
-            background: radial-gradient(circle at 100px 100px, #5a5a5a, #000);
+            background: radial-gradient(circle at 30% 30%, #5a5a5a, #000);
             border-radius: 50%;
-            margin: 20px auto;
+            margin: 2rem auto;
             position: relative;
             cursor: pointer;
             transition: transform 0.3s ease;
+            box-shadow: 
+                inset -10px -10px 20px rgba(0, 0, 0, 0.5),
+                inset 10px 10px 20px rgba(255, 255, 255, 0.1),
+                0 0 50px rgba(0, 0, 0, 0.5);
         }
+
         .magic-ball:hover {
             transform: scale(1.05);
         }
+
         .answer-window {
             width: 150px;
             height: 150px;
-            background: #fff;
+            background: radial-gradient(circle at center, #fff, #e0e0e0);
             border-radius: 50%;
             position: absolute;
             top: 75px;
@@ -40,47 +61,98 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: black;
-            font-size: 16px;
-            padding: 10px;
-            opacity: 0.9;
+            color: #000;
+            font-size: 1rem;
+            padding: 1rem;
             text-align: center;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
+            font-weight: bold;
         }
+
         input {
-            padding: 10px;
-            width: 300px;
-            margin: 10px;
-            border-radius: 5px;
+            width: 80%;
+            max-width: 400px;
+            padding: 1rem;
+            margin: 1rem;
             border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
+
+        input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
         button {
-            padding: 10px 20px;
-            background: #4CAF50;
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 25px;
             cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            20% { transform: rotate(-20deg); }
+            40% { transform: rotate(20deg); }
+            60% { transform: rotate(-10deg); }
+            80% { transform: rotate(10deg); }
+        }
+
+        .shaking {
+            animation: shake 0.5s ease-in-out;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🎱 Magic 8 Ball</h1>
-        <input type="text" id="question" placeholder="Ask a question...">
+        <input type="text" id="question" placeholder="Ask your question..." 
+               onkeypress="if(event.keyCode===13)askQuestion()">
         <div class="magic-ball" onclick="askQuestion()">
             <div class="answer-window" id="answer">
-                Ask a question
+                Ask a question...
             </div>
         </div>
-        <button onclick="askQuestion()">Ask</button>
+        <button onclick="askQuestion()">Shake & Ask</button>
     </div>
+
     <script>
         async function askQuestion() {
             const question = document.getElementById('question').value;
-            if (!question) {
-                document.getElementById('answer').textContent = "Ask a question";
+            const ball = document.querySelector('.magic-ball');
+            const answer = document.getElementById('answer');
+            
+            if (!question.trim()) {
+                answer.textContent = "Ask a question...";
                 return;
             }
+            
+            ball.classList.add('shaking');
+            answer.style.opacity = '0.3';
             
             try {
                 const response = await fetch('/api/ask', {
@@ -89,11 +161,19 @@
                     body: JSON.stringify({ question })
                 });
                 const data = await response.json();
-                document.getElementById('answer').textContent = data.answer;
+                
+                setTimeout(() => {
+                    answer.textContent = data.answer;
+                    answer.style.opacity = '1';
+                }, 500);
             } catch (error) {
-                document.getElementById('answer').textContent = "Error, try again";
+                answer.textContent = "Error, try again";
             }
         }
+
+        document.querySelector('.magic-ball').addEventListener('animationend', function() {
+            this.classList.remove('shaking');
+        });
     </script>
 </body>
 </html>
