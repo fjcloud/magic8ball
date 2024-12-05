@@ -13,7 +13,6 @@
             justify-content: center;
             align-items: center;
         }
-
         .container {
             text-align: center;
             padding: 2rem;
@@ -21,16 +20,7 @@
             border-radius: 20px;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px);
-            max-width: 600px;
-            width: 90%;
         }
-
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 2rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
         .magic-ball {
             width: 300px;
             height: 300px;
@@ -40,16 +30,11 @@
             position: relative;
             cursor: pointer;
             transition: transform 0.3s ease;
-            box-shadow: 
-                inset -10px -10px 20px rgba(0, 0, 0, 0.5),
-                inset 10px 10px 20px rgba(255, 255, 255, 0.1),
-                0 0 50px rgba(0, 0, 0, 0.5);
+            box-shadow: inset -10px -10px 20px rgba(0, 0, 0, 0.5),
+                       inset 10px 10px 20px rgba(255, 255, 255, 0.1),
+                       0 0 50px rgba(0, 0, 0, 0.5);
         }
-
-        .magic-ball:hover {
-            transform: scale(1.05);
-        }
-
+        .magic-ball:hover { transform: scale(1.05); }
         .answer-window {
             width: 150px;
             height: 150px;
@@ -68,52 +53,6 @@
             box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
             font-weight: bold;
         }
-
-        input {
-            width: 80%;
-            max-width: 400px;
-            padding: 1rem;
-            margin: 1rem;
-            border: none;
-            border-radius: 25px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 1rem;
-            text-align: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        input:focus {
-            outline: none;
-            background: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        button {
-            padding: 1rem 2rem;
-            background: linear-gradient(45deg, #4CAF50, #45a049);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
-        }
-
         @keyframes shake {
             0%, 100% { transform: rotate(0deg); }
             20% { transform: rotate(-20deg); }
@@ -121,53 +60,33 @@
             60% { transform: rotate(-10deg); }
             80% { transform: rotate(10deg); }
         }
-
-        .shaking {
-            animation: shake 0.5s ease-in-out;
-        }
+        .shaking { animation: shake 0.5s ease-in-out; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🎱 Magic 8 Ball</h1>
-        <input type="text" id="question" placeholder="Ask your question..." 
-               onkeypress="if(event.keyCode===13)askQuestion()">
         <div class="magic-ball" onclick="askQuestion()">
-            <div class="answer-window" id="answer">
-                Ask a question...
-            </div>
+            <div class="answer-window" id="answer">Click to ask</div>
         </div>
-        <button onclick="askQuestion()">Shake & Ask</button>
     </div>
-
     <script>
         async function askQuestion() {
-            const question = document.getElementById('question').value;
             const ball = document.querySelector('.magic-ball');
             const answer = document.getElementById('answer');
-            
-            if (!question.trim()) {
-                answer.textContent = "Ask a question...";
-                return;
-            }
             
             ball.classList.add('shaking');
             answer.style.opacity = '0.3';
             
             try {
-                const response = await fetch('/api/ask', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ question })
-                });
+                const response = await fetch('/api/ask');
                 const data = await response.json();
-                
                 setTimeout(() => {
                     answer.textContent = data.answer;
                     answer.style.opacity = '1';
                 }, 500);
             } catch (error) {
-                answer.textContent = "Error, try again";
+                answer.textContent = "Try again";
             }
         }
 
