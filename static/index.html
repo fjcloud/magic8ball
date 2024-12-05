@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Magic 8 Ball</title>
+    <style>
+        body {
+            background: #1a1a1a;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+        }
+        .magic-ball {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle at 100px 100px, #5a5a5a, #000);
+            border-radius: 50%;
+            margin: 20px auto;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .magic-ball:hover {
+            transform: scale(1.05);
+        }
+        .answer-window {
+            width: 150px;
+            height: 150px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 75px;
+            left: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black;
+            font-size: 16px;
+            padding: 10px;
+            opacity: 0.9;
+            text-align: center;
+        }
+        input {
+            padding: 10px;
+            width: 300px;
+            margin: 10px;
+            border-radius: 5px;
+            border: none;
+        }
+        button {
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎱 Magic 8 Ball</h1>
+        <input type="text" id="question" placeholder="Ask a question...">
+        <div class="magic-ball" onclick="askQuestion()">
+            <div class="answer-window" id="answer">
+                Ask a question
+            </div>
+        </div>
+        <button onclick="askQuestion()">Ask</button>
+    </div>
+    <script>
+        async function askQuestion() {
+            const question = document.getElementById('question').value;
+            if (!question) {
+                document.getElementById('answer').textContent = "Ask a question";
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question })
+                });
+                const data = await response.json();
+                document.getElementById('answer').textContent = data.answer;
+            } catch (error) {
+                document.getElementById('answer').textContent = "Error, try again";
+            }
+        }
+    </script>
+</body>
+</html>
