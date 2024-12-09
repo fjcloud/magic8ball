@@ -1,6 +1,6 @@
 # Magic8ball
 
-## Deploy / Build on OpenShift
+## Build / Deploy on OpenShift
 
 ```shell
 oc new-project magic8ball
