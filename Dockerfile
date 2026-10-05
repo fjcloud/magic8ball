@@ -9,7 +9,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /opt/app
 COPY requirements.txt .
-RUN ["/opt/venv/bin/python3", "-m", "pip", "install", "--no-cache-dir", "-r", "requirements.txt"]
+RUN ["/opt/venv/bin/python3", "-m", "pip", "install", "--no-cache-dir", "--require-hashes", "-r", "requirements.txt"]
 COPY app.py .
 COPY static static/
 
