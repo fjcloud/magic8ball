@@ -1,12 +1,19 @@
-FROM registry.redhat.io/rhel9/python-312
+ARG BASE_IMAGE=registry.redhat.io/rhel9/python-312
+FROM ${BASE_IMAGE}
 
+# Exec form: the hardened image has no shell and no chown.
 USER 0
-COPY app.py requirements.txt ./
+RUN ["python3", "-m", "venv", "/opt/venv"]
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /opt/app
+COPY requirements.txt .
+RUN ["/opt/venv/bin/python3", "-m", "pip", "install", "--no-cache-dir", "-r", "requirements.txt"]
+COPY app.py .
 COPY static static/
-RUN chown -R 1001:0 ./
-USER 1001
 
-RUN pip install -r requirements.txt
-
+USER ${CONTAINER_DEFAULT_USER:-1001}
 EXPOSE 8080
-CMD uvicorn app:app --host 0.0.0.0 --port 8080
+CMD ["/opt/venv/bin/python3", "-m", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]
