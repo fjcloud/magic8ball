@@ -22,9 +22,16 @@ async def ask_question():
         "Most likely", "Outlook good", "Yes", "Signs point to yes",
         "Reply hazy, try again", "Ask again later",
         "Better not tell you now", "Cannot predict now",
-        "Concentrate and ask again", "Don't count on it", 
+        "Concentrate and ask again", "Don't count on it",
         "My reply is no", "My sources say no",
-        "Outlook not so good", "Very doubtful"
+        "Outlook not so good", "Very doubtful",
+        "The stars say yes", "Count on it",
+        "Absolutely", "The odds are in your favor",
+        "All signs are positive", "You already know the answer",
+        "The fog has not lifted", "Ask when the moon is higher",
+        "The answer is still forming", "Not this time",
+        "The path is closed", "Unlikely",
+        "The universe shrugs", "Try a different question"
     ]
     return {"answer": random.choice(responses)}
 
