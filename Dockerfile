@@ -1,5 +1,4 @@
-ARG BASE_IMAGE=registry.redhat.io/rhel9/python-312
-FROM ${BASE_IMAGE}
+FROM registry.redhat.io/rhel9/python-312
 
 # Exec form: the hardened image has no shell and no chown.
 USER 0
