@@ -1,98 +1,197 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Magic 8 Ball</title>
-    <style>
-        body {
-            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
-            color: white;
-            font-family: 'Arial', sans-serif;
-            min-height: 100vh;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .container {
-            text-align: center;
-            padding: 2rem;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-        }
-        .magic-ball {
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle at 30% 30%, #5a5a5a, #000);
-            border-radius: 50%;
-            margin: 2rem auto;
-            position: relative;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            box-shadow: inset -10px -10px 20px rgba(0, 0, 0, 0.5),
-                       inset 10px 10px 20px rgba(255, 255, 255, 0.1),
-                       0 0 50px rgba(0, 0, 0, 0.5);
-        }
-        .magic-ball:hover { transform: scale(1.05); }
-        .answer-window {
-            width: 150px;
-            height: 150px;
-            background: radial-gradient(circle at center, #fff, #e0e0e0);
-            border-radius: 50%;
-            position: absolute;
-            top: 75px;
-            left: 75px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #000;
-            font-size: 1rem;
-            padding: 1rem;
-            text-align: center;
-            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
-            font-weight: bold;
-        }
-        @keyframes shake {
-            0%, 100% { transform: rotate(0deg); }
-            20% { transform: rotate(-20deg); }
-            40% { transform: rotate(20deg); }
-            60% { transform: rotate(-10deg); }
-            80% { transform: rotate(10deg); }
-        }
-        .shaking { animation: shake 0.5s ease-in-out; }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Magic 8 Ball</title>
+<style>
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: #0c0c14;
+  color: #f4f4f4;
+  font: 16px/1.4 "Courier New", monospace;
+  text-align: center;
+}
+body::before {
+  content: "";
+  position: fixed;
+  width: 2px;
+  height: 2px;
+  background: #fff;
+  box-shadow:
+    12vw 18vh #fff, 28vw 8vh #9aa4ff, 70vw 14vh #fff,
+    84vw 30vh #ffe7a0, 18vw 72vh #fff, 90vw 78vh #9aa4ff,
+    46vw 10vh #fff, 62vw 64vh #ffe7a0;
+  pointer-events: none;
+}
+main {
+  position: relative;
+  padding: 28px 16px 22px;
+  background: #171824;
+  border: 4px solid #000;
+  box-shadow: 8px 8px 0 #000;
+}
+h1 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  text-shadow: 4px 4px 0 #000;
+}
+button {
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+}
+button:focus-visible { outline: 4px solid #ffe7a0; outline-offset: 6px; }
+canvas { width: 280px; height: 231px; image-rendering: pixelated; display: block; }
+.shake { animation: bump .45s steps(4, end); }
+@keyframes bump {
+  20% { transform: translate(-6px, 2px); }
+  40% { transform: translate(6px, -2px); }
+  70% { transform: translate(-3px, 0); }
+}
+.term {
+  width: max-content;
+  min-width: 280px;
+  margin: 14px auto 0;
+  background: #07140d;
+  color: #7dff9a;
+  border: 4px solid #d8ffe6;
+  box-shadow: 6px 6px 0 #000;
+  text-align: left;
+}
+.term header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background: #123024;
+  color: #d8ffe6;
+  font-size: 12px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.led { width: 8px; height: 8px; background: #7dff9a; box-shadow: 0 0 0 2px #000; }
+pre {
+  margin: 0;
+  min-height: 72px;
+  padding: 8px;
+  font: inherit;
+  font-size: 13px;
+  white-space: pre;
+}
+pre::after {
+  content: "█";
+  animation: blink 1s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .shake, pre::after { animation: none; }
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎱 Magic 8 Ball</h1>
-        <div class="magic-ball" onclick="askQuestion()">
-            <div class="answer-window" id="answer">Click to ask</div>
-        </div>
-    </div>
-    <script>
-        async function askQuestion() {
-            const ball = document.querySelector('.magic-ball');
-            const answer = document.getElementById('answer');
-            
-            ball.classList.add('shaking');
-            answer.style.opacity = '0.3';
-            
-            try {
-                const response = await fetch('/api/ask');
-                const data = await response.json();
-                setTimeout(() => {
-                    answer.textContent = data.answer;
-                    answer.style.opacity = '1';
-                }, 500);
-            } catch (error) {
-                answer.textContent = "Try again";
-            }
-        }
+<main>
+  <h1>Magic 8 Ball</h1>
+  <button id="ask" type="button" aria-label="Ask the Magic 8 Ball">
+    <canvas id="ball" width="40" height="33"></canvas>
+  </button>
+  <section class="term">
+    <header><span class="led"></span>term</header>
+    <pre id="log" aria-live="polite">&gt; click the ball</pre>
+  </section>
+</main>
+<script>
+const sprite = `
+..............ooooooooooo...............
+............ooooo#####ooooo.............
+..........oooo###########oooo...........
+.........ooo#hh############ooo..........
+........oo##hh###############oo.........
+.......oo##hh####wwwwww#######oo........
+......oo###h####ww888www#######oo.......
+.....oo####h###ww8www8www#######oo......
+.....oo####h###ww8www8www#######oo......
+....oo########wwww888wwwww#######oo.....
+....oo########www8www8wwww#######oo.....
+...oo##########ww8www8www#########oo....
+...oo##########www888wwww#########oo....
+...oo###########wwwwwwww##########oo....
+...o#############wwwwww############o....
+...o###############ww##############o....
+...o###############################o....
+...o###############################o....
+...o###############################o....
+...oo##############bb#############oo....
+...oo############bbbbbb###########oo....
+...oo###########bbbbbbbb##########oo....
+....oo#########bbbbtbbbbb########oo.....
+....oo#########bbbtttbbbb########oo.....
+.....oo#######bbbtttttbbbb######oo......
+.....oo#######bbtttttttbbb######oo......
+......oo#######bbbbbbbbbb######oo.......
+.......oo######bbbbbbbbbb#####oo........
+........oo######bbbbbbbb#####oo.........
+.........ooo#####bbbbbb####ooo..........
+..........oooo#####bb####oooo...........
+............ooooo#####ooooo.............
+..............ooooooooooo...............
+`.trim().split("\n");
+const color = { o: "#000", "#": "#141414", h: "#7a7a88", w: "#f4f0e0", 8: "#141414", b: "#2a45d0", t: "#fff" };
+const ctx = ball.getContext("2d");
+sprite.forEach((row, y) => [...row].forEach((ch, x) => {
+  if (!color[ch]) return;
+  ctx.fillStyle = color[ch];
+  ctx.fillRect(x, y, 1, 1);
+}));
 
-        document.querySelector('.magic-ball').addEventListener('animationend', function() {
-            this.classList.remove('shaking');
-        });
-    </script>
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let busy = false;
+
+function fit() {
+  let size = 13;
+  log.style.fontSize = size + "px";
+  while (size > 9 && document.querySelector("main").offsetWidth > innerWidth - 20) {
+    size -= 0.5;
+    log.style.fontSize = size + "px";
+  }
+}
+
+function type(text) {
+  log.textContent = text;
+  fit();
+  if (reduce) return Promise.resolve();
+  return new Promise((resolve) => {
+    let i = 0;
+    const timer = setInterval(() => {
+      log.textContent = text.slice(0, ++i);
+      if (i >= text.length) { clearInterval(timer); resolve(); }
+    }, 16);
+  });
+}
+
+ask.onclick = async () => {
+  if (busy) return;
+  busy = true;
+  ask.classList.add("shake");
+  const req = "> GET /api/ask";
+  log.textContent = req;
+  try {
+    const res = await fetch("/api/ask");
+    const data = await res.json();
+    const json = JSON.stringify(data, null, 1).replace(/\n\s*/g, " ");
+    await type(req + "\n< " + res.status + "\n" + json);
+  } catch (e) {
+    log.textContent = req + "\n< error";
+  }
+  ask.classList.remove("shake");
+  busy = false;
+};
+</script>
 </body>
 </html>
