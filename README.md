@@ -11,6 +11,6 @@ oc create route edge --service=magic8ball
 ## Use the hardened Python image
 
 ```shell
-oc patch bc/magic8ball --type=merge -p '{"spec":{"strategy":{"dockerStrategy":{"from":{"kind":"DockerImage","name":"registry.access.redhat.com/hi/python:latest"}}}}}'
+oc patch bc/magic8ball --type=merge -p '{"spec":{"strategy":{"dockerStrategy":{"from":{"kind":"DockerImage","name":"registry.access.redhat.com/hi/python:3.14"}}}}}'
 oc start-build magic8ball
 ```

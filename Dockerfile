@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi9/python-312
+FROM registry.access.redhat.com/ubi10/python-314-minimal:10.2
 
 # Exec form: the hardened image has no shell and no chown.
 USER 0
