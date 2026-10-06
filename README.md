@@ -8,6 +8,12 @@ oc new-app https://github.com/fjcloud/magic8ball.git --strategy docker
 oc create route edge --service=magic8ball
 ```
 
+## Block internet except DNS
+
+```shell
+oc apply -f https://raw.githubusercontent.com/fjcloud/magic8ball/main/networkpolicy.yaml
+```
+
 ## Use the hardened Python image
 
 ```shell
